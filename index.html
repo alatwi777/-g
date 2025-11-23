@@ -5,11 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>فتح التطبيقات في الخلفية</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -22,22 +28,23 @@
             background-color: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 40px;
+            padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             max-width: 500px;
             width: 90%;
         }
         
         h1 {
-            margin-bottom: 30px;
-            font-size: 28px;
+            margin-bottom: 25px;
+            font-size: 24px;
             text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         
         .app-list {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
         }
         
         .app-icon {
@@ -51,11 +58,12 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.3s, background-color 0.3s;
+            margin: 5px;
         }
         
-        .app-icon:hover {
-            transform: translateY(-5px);
-            background-color: rgba(255, 255, 255, 0.3);
+        .app-icon.active {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
         }
         
         .app-icon i {
@@ -71,21 +79,29 @@
             background: linear-gradient(to right, #ff8a00, #da1b60);
             color: white;
             border: none;
-            padding: 15px 40px;
+            padding: 15px 30px;
             font-size: 18px;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
         }
         
-        .open-btn:hover {
+        .open-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .open-btn:not(:disabled):hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
         
-        .open-btn:active {
+        .open-btn:not(:disabled):active {
             transform: translateY(1px);
         }
         
@@ -93,6 +109,9 @@
             margin-top: 20px;
             font-size: 16px;
             min-height: 24px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
         }
         
         .progress-bar {
@@ -102,7 +121,6 @@
             border-radius: 4px;
             margin-top: 20px;
             overflow: hidden;
-            display: none;
         }
         
         .progress {
@@ -110,6 +128,24 @@
             background: linear-gradient(to right, #ff8a00, #da1b60);
             width: 0%;
             transition: width 0.5s;
+        }
+        
+        .instructions {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: right;
+        }
+        
+        .instructions ol {
+            padding-right: 20px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
         }
         
         @keyframes pulse {
@@ -121,6 +157,10 @@
         .pulse {
             animation: pulse 1s infinite;
         }
+        
+        .hidden {
+            display: none;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -129,15 +169,15 @@
         <h1>فتح التطبيقات في الخلفية</h1>
         
         <div class="app-list">
-            <div class="app-icon">
+            <div class="app-icon" id="weatherIcon">
                 <i class="fas fa-cloud-sun"></i>
                 <span>الطقس</span>
             </div>
-            <div class="app-icon">
+            <div class="app-icon" id="calendarIcon">
                 <i class="fas fa-calendar-alt"></i>
                 <span>التقويم</span>
             </div>
-            <div class="app-icon">
+            <div class="app-icon" id="clockIcon">
                 <i class="fas fa-clock"></i>
                 <span>الساعة</span>
             </div>
@@ -147,65 +187,131 @@
             فتح التطبيقات في الخلفية
         </button>
         
-        <div class="progress-bar" id="progressBar">
+        <div class="progress-bar">
             <div class="progress" id="progress"></div>
         </div>
         
-        <div class="status" id="status"></div>
+        <div class="status" id="status">انقر على الزر لفتح التطبيقات</div>
+        
+        <div class="instructions">
+            <strong>للاستخدام على iOS:</strong>
+            <ol>
+                <li>انقر على الزر أعلاه</li>
+                <li>سيتم فتح روابط التطبيقات واحداً تلو الآخر</li>
+                <li>ارجع إلى هذه الصفحة بعد كل نقرة لمواصلة العملية</li>
+                <li>كرر هذه الخطوات لكل تطبيق</li>
+            </ol>
+        </div>
     </div>
 
     <script>
-        document.getElementById('openBtn').addEventListener('click', function() {
-            const btn = this;
+        document.addEventListener('DOMContentLoaded', function() {
+            const openBtn = document.getElementById('openBtn');
             const status = document.getElementById('status');
-            const progressBar = document.getElementById('progressBar');
             const progress = document.getElementById('progress');
+            const weatherIcon = document.getElementById('weatherIcon');
+            const calendarIcon = document.getElementById('calendarIcon');
+            const clockIcon = document.getElementById('clockIcon');
             
-            // تعطيل الزر أثناء التنفيذ
-            btn.disabled = true;
-            btn.classList.add('pulse');
-            progressBar.style.display = 'block';
-            
-            // محاكاة فتح التطبيقات بالتسلسل
+            // روابط التطبيقات (يمكن تعديلها حسب الحاجة)
             const apps = [
-                { name: 'الطقس', url: 'https://weather.com', delay: 1500 },
-                { name: 'التقويم', url: 'https://calendar.google.com', delay: 1500 },
-                { name: 'الساعة', url: 'https://time.is', delay: 1500 }
+                { 
+                    name: 'الطقس', 
+                    url: 'calshow://', // رابط فتح تطبيق التقويم في iOS
+                    icon: weatherIcon,
+                    fallbackUrl: 'https://weather.com'
+                },
+                { 
+                    name: 'التقويم', 
+                    url: 'calshow://', // رابط فتح تطبيق التقويم في iOS
+                    icon: calendarIcon,
+                    fallbackUrl: 'https://calendar.google.com'
+                },
+                { 
+                    name: 'الساعة', 
+                    url: 'clock-alarm://', // رابط فتح تطبيق الساعة في iOS
+                    icon: clockIcon,
+                    fallbackUrl: 'https://time.is'
+                }
             ];
             
-            let currentApp = 0;
+            let currentAppIndex = 0;
+            let isOpening = false;
+            
+            openBtn.addEventListener('click', function() {
+                if (isOpening) return;
+                
+                isOpening = true;
+                currentAppIndex = 0;
+                progress.style.width = '0%';
+                status.textContent = 'جاري التحضير لفتح التطبيقات...';
+                openBtn.disabled = true;
+                
+                // بدء فتح التطبيقات واحداً تلو الآخر
+                openNextApp();
+            });
             
             function openNextApp() {
-                if (currentApp < apps.length) {
-                    const app = apps[currentApp];
-                    status.textContent = `جاري فتح تطبيق ${app.name}...`;
+                if (currentAppIndex >= apps.length) {
+                    // تم فتح جميع التطبيقات
+                    status.textContent = 'تم فتح جميع التطبيقات!';
+                    openBtn.disabled = false;
+                    isOpening = false;
                     
-                    // محاكاة فتح التطبيق في نافذة جديدة
-                    setTimeout(() => {
-                        window.open(app.url, '_blank', 'width=400,height=600,left=100,top=100');
-                        
-                        // تحديث شريط التقدم
-                        progress.style.width = `${((currentApp + 1) / apps.length) * 100}%`;
-                        
-                        currentApp++;
-                        openNextApp();
-                    }, app.delay);
-                } else {
-                    // الانتهاء من فتح جميع التطبيقات
-                    status.textContent = 'تم فتح جميع التطبيقات بنجاح!';
-                    btn.disabled = false;
-                    btn.classList.remove('pulse');
-                    
-                    // إخفاء شريط التقدم بعد ثوانٍ
-                    setTimeout(() => {
-                        progressBar.style.display = 'none';
-                        progress.style.width = '0%';
-                    }, 3000);
+                    // إعادة تعيين الأيقونات
+                    apps.forEach(app => app.icon.classList.remove('active'));
+                    return;
                 }
+                
+                const app = apps[currentAppIndex];
+                
+                // تحديث الواجهة
+                status.textContent = `جاري فتح تطبيق ${app.name}...`;
+                progress.style.width = `${((currentAppIndex + 1) / apps.length) * 100}%`;
+                
+                // إبراز الأيقونة الحالية
+                apps.forEach(a => a.icon.classList.remove('active'));
+                app.icon.classList.add('active');
+                
+                // محاولة فتح التطبيق باستخدام deep link
+                tryToOpenApp(app);
+                
+                // الانتقال إلى التطبيق التالي بعد تأخير
+                currentAppIndex++;
+                setTimeout(openNextApp, 3000);
             }
             
-            // بدء عملية فتح التطبيقات
-            openNextApp();
+            function tryToOpenApp(app) {
+                // محاولة فتح التطبيق باستخدام deep link (للتطبيقات المثبتة)
+                const appLink = document.createElement('a');
+                appLink.href = app.url;
+                appLink.target = '_blank';
+                document.body.appendChild(appLink);
+                appLink.click();
+                document.body.removeChild(appLink);
+                
+                // إذا لم يفتح التطبيق، نقدم رابطاً بديلاً
+                setTimeout(() => {
+                    // هذا سيفتح في المتصفح إذا لم يكن التطبيق مثبتاً
+                    window.open(app.fallbackUrl, '_blank');
+                }, 1000);
+            }
+            
+            // للكشف عن نظام التشغيل وعرض التعليمات المناسبة
+            function detectOS() {
+                const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                
+                // iOS detection
+                if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                    return 'iOS';
+                }
+                return 'other';
+            }
+            
+            // تعديل التعليمات بناءً على نظام التشغيل
+            if (detectOS() === 'iOS') {
+                document.querySelector('.instructions').classList.remove('hidden');
+            }
         });
     </script>
 </body>
