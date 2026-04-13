@@ -1,318 +1,650 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فتح التطبيقات في الخلفية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>نظام جدول الحصص - المعلمين والفصول</title>
     <style>
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', 'Tahoma', system-ui, sans-serif;
         }
-        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            background: #f0f7ff;
             margin: 0;
             padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #fff;
         }
-        
         .container {
-            text-align: center;
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
-            width: 90%;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
+            overflow: hidden;
+            padding: 20px 24px 32px 24px;
         }
-        
         h1 {
-            margin-bottom: 25px;
-            font-size: 24px;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 1.8rem;
+            color: #1e3a5f;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            border-right: 6px solid #2c7da0;
+            padding-right: 18px;
         }
-        
-        .app-list {
+        /* tabs style */
+        .tabs {
             display: flex;
-            justify-content: space-around;
-            margin-bottom: 25px;
+            gap: 12px;
+            border-bottom: 2px solid #cbd5e1;
+            margin-bottom: 28px;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 12px 28px;
+            cursor: pointer;
+            border-radius: 30px 30px 0 0;
+            transition: all 0.2s;
+            color: #2c3e66;
+        }
+        .tab-btn.active {
+            background: #2c7da0;
+            color: white;
+            box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
+        }
+        .tab-content {
+            display: none;
+            animation: fade 0.2s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(6px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        /* buttons row */
+        .button-panel {
+            display: flex;
             flex-wrap: wrap;
-        }
-        
-        .app-icon {
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
-            padding: 15px;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 28px;
+            background: #eef2fa;
+            padding: 16px 20px;
+            border-radius: 40px;
             align-items: center;
-            justify-content: center;
-            transition: transform 0.3s, background-color 0.3s;
-            margin: 5px;
         }
-        
-        .app-icon.active {
-            background-color: rgba(255, 255, 255, 0.4);
-            transform: scale(1.1);
+        .btn {
+            background: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: 0.1s linear;
+            color: #1e4663;
+            border: 1px solid #cbdbe0;
         }
-        
-        .app-icon i {
-            font-size: 30px;
-            margin-bottom: 8px;
-        }
-        
-        .app-icon span {
-            font-size: 14px;
-        }
-        
-        .open-btn {
-            background: linear-gradient(to right, #ff8a00, #da1b60);
+        .btn-primary {
+            background: #1e5a7a;
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn-primary:hover {
+            background: #0f4a68;
+            transform: scale(0.97);
+        }
+        .btn-lesson {
+            background: #e9f0f9;
+            border-right: 4px solid #2c7da0;
             font-weight: bold;
-            width: 100%;
-            margin-top: 10px;
         }
-        
-        .open-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
+        .btn:hover {
+            background: #d9e2ef;
+            transform: translateY(-1px);
         }
-        
-        .open-btn:not(:disabled):hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        .form-card {
+            background: #f9fbfe;
+            border-radius: 28px;
+            padding: 18px 22px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid #e2edf7;
         }
-        
-        .open-btn:not(:disabled):active {
-            transform: translateY(1px);
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
         }
-        
-        .status {
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .input-group label {
+            font-weight: 600;
+            color: #1f4e6e;
+            font-size: 0.85rem;
+        }
+        input, select {
+            padding: 8px 14px;
+            border-radius: 28px;
+            border: 1px solid #bfd6e8;
+            background: white;
+            font-size: 0.9rem;
+            min-width: 160px;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 24px;
+            border: 1px solid #dee9f2;
+            background: white;
             margin-top: 20px;
-            font-size: 16px;
-            min-height: 24px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
         }
-        
-        .progress-bar {
+        table {
             width: 100%;
-            height: 8px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            margin-top: 20px;
-            overflow: hidden;
+            border-collapse: collapse;
+            font-size: 0.9rem;
         }
-        
-        .progress {
-            height: 100%;
-            background: linear-gradient(to right, #ff8a00, #da1b60);
-            width: 0%;
-            transition: width 0.5s;
+        th {
+            background: #e6f0f9;
+            padding: 12px 10px;
+            border-bottom: 2px solid #cbdbe2;
+            color: #1a405b;
         }
-        
-        .instructions {
-            background: rgba(0, 0, 0, 0.2);
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e2edf4;
+            vertical-align: top;
+        }
+        .day-header {
+            background: #d4e3f0;
+            font-size: 1.1rem;
+        }
+        .badge {
+            background: #eef2fc;
+            border-radius: 40px;
+            padding: 4px 10px;
+            display: inline-block;
+            margin: 2px 4px;
+            font-size: 0.8rem;
+        }
+        .empty-msg {
+            color: #8aa0b5;
+            padding: 20px;
+            text-align: center;
+        }
+        .search-result {
+            background: #fef7e0;
+            border-radius: 20px;
             padding: 15px;
-            border-radius: 10px;
             margin-top: 20px;
-            font-size: 14px;
-            text-align: right;
         }
-        
-        .instructions ol {
-            padding-right: 20px;
-            margin-top: 10px;
+        hr {
+            margin: 18px 0;
         }
-        
-        .instructions li {
-            margin-bottom: 8px;
+        footer {
+            font-size: 0.75rem;
+            text-align: center;
+            margin-top: 32px;
+            color: #6c86a3;
         }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .pulse {
-            animation: pulse 1s infinite;
-        }
-        
-        .hidden {
-            display: none;
+        @media (max-width: 700px) {
+            .button-panel { gap: 8px; }
+            .btn { padding: 6px 12px; font-size: 0.8rem; }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>فتح التطبيقات في الخلفية</h1>
-        
-        <div class="app-list">
-            <div class="app-icon" id="weatherIcon">
-                <i class="fas fa-cloud-sun"></i>
-                <span>الطقس</span>
-            </div>
-            <div class="app-icon" id="calendarIcon">
-                <i class="fas fa-calendar-alt"></i>
-                <span>التقويم</span>
-            </div>
-            <div class="app-icon" id="clockIcon">
-                <i class="fas fa-clock"></i>
-                <span>الساعة</span>
-            </div>
+<div class="container">
+    <h1>📚 جدول إدارة الحصص - المعلمون والفصول</h1>
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="tab-general">📋 الجدول العام</button>
+        <button class="tab-btn" data-tab="tab-search">🔍 البحث</button>
+    </div>
+
+    <!-- =========================  تبويب الجدول العام ========================= -->
+    <div id="tab-general" class="tab-content active">
+        <!-- أزرار الإضافة -->
+        <div class="button-panel">
+            <button id="addTeacherBtn" class="btn btn-primary">➕ إضافة اسم المعلم</button>
+            <button id="addDayBtn" class="btn btn-primary">📅 إضافة اليوم</button>
+            <button id="addClassBtn" class="btn btn-primary">🏫 إضافة فصل</button>
+            <span style="margin:0 4px; font-weight:bold;">|</span>
+            <span style="font-weight:500;">إضافة الحصة:</span>
+            <button data-lesson="1" class="btn lesson-add-btn btn-lesson">الحصة الأولى</button>
+            <button data-lesson="2" class="btn lesson-add-btn btn-lesson">الحصة الثانية</button>
+            <button data-lesson="3" class="btn lesson-add-btn btn-lesson">الحصة الثالثة</button>
+            <button data-lesson="4" class="btn lesson-add-btn btn-lesson">الحصة الرابعة</button>
+            <button data-lesson="5" class="btn lesson-add-btn btn-lesson">الحصة الخامسة</button>
+            <button data-lesson="6" class="btn lesson-add-btn btn-lesson">الحصة السادسة</button>
+            <button data-lesson="7" class="btn lesson-add-btn btn-lesson">الحصة السابعة</button>
         </div>
-        
-        <button class="open-btn" id="openBtn">
-            فتح التطبيقات في الخلفية
-        </button>
-        
-        <div class="progress-bar">
-            <div class="progress" id="progress"></div>
+
+        <!-- لوحة الإدخال السريع (يتم عرضها عند الضغط على أي زر إضافة) -->
+        <div id="inputPanel" class="form-card" style="display: none;">
+            <div class="flex-row">
+                <div class="input-group">
+                    <label id="inputLabel" for="dynamicInput">📌 القيمة</label>
+                    <input type="text" id="dynamicInput" placeholder="أدخل القيمة..." autocomplete="off">
+                </div>
+                <div class="input-group" id="extraSelectGroup" style="display: none;">
+                    <label id="extraLabel">اختيار إضافي</label>
+                    <select id="extraSelect"></select>
+                </div>
+                <div class="input-group">
+                    <button id="confirmDynamicBtn" class="btn btn-primary">✅ تأكيد</button>
+                    <button id="cancelDynamicBtn" class="btn">إلغاء</button>
+                </div>
+            </div>
+            <p id="helperMsg" style="font-size:0.75rem; margin-top:10px; color:#3b6e8f;"></p>
         </div>
-        
-        <div class="status" id="status">انقر على الزر لفتح التطبيقات</div>
-        
-        <div class="instructions">
-            <strong>للاستخدام على iOS:</strong>
-            <ol>
-                <li>انقر على الزر أعلاه</li>
-                <li>سيتم فتح روابط التطبيقات واحداً تلو الآخر</li>
-                <li>ارجع إلى هذه الصفحة بعد كل نقرة لمواصلة العملية</li>
-                <li>كرر هذه الخطوات لكل تطبيق</li>
-            </ol>
+
+        <!-- عرض الجداول: كل يوم له جدول يعرض المعلمين وحصصهم + الفصل -->
+        <div id="daysTablesContainer">
+            <!-- سيتم إنشاء جداول الأيام ديناميكياً -->
+            <div class="empty-msg">⚠️ لا توجد أيام بعد. أضف يوم باستخدام زر "إضافة اليوم"</div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const openBtn = document.getElementById('openBtn');
-            const status = document.getElementById('status');
-            const progress = document.getElementById('progress');
-            const weatherIcon = document.getElementById('weatherIcon');
-            const calendarIcon = document.getElementById('calendarIcon');
-            const clockIcon = document.getElementById('clockIcon');
-            
-            // روابط التطبيقات (يمكن تعديلها حسب الحاجة)
-            const apps = [
-                { 
-                    name: 'الطقس', 
-                    url: 'calshow://', // رابط فتح تطبيق التقويم في iOS
-                    icon: weatherIcon,
-                    fallbackUrl: 'https://weather.com'
-                },
-                { 
-                    name: 'التقويم', 
-                    url: 'calshow://', // رابط فتح تطبيق التقويم في iOS
-                    icon: calendarIcon,
-                    fallbackUrl: 'https://calendar.google.com'
-                },
-                { 
-                    name: 'الساعة', 
-                    url: 'clock-alarm://', // رابط فتح تطبيق الساعة في iOS
-                    icon: clockIcon,
-                    fallbackUrl: 'https://time.is'
+    <!-- =========================  تبويب البحث ========================= -->
+    <div id="tab-search" class="tab-content">
+        <div class="form-card">
+            <div class="flex-row" style="align-items: center;">
+                <div class="input-group">
+                    <label>📅 اختر اليوم:</label>
+                    <select id="searchDaySelect">
+                        <option value="">-- اختر اليوم --</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>⏰ اختر الحصة:</label>
+                    <select id="searchLessonSelect">
+                        <option value="">-- اختر الحصة --</option>
+                        <option value="1">الحصة الأولى</option>
+                        <option value="2">الحصة الثانية</option>
+                        <option value="3">الحصة الثالثة</option>
+                        <option value="4">الحصة الرابعة</option>
+                        <option value="5">الحصة الخامسة</option>
+                        <option value="6">الحصة السادسة</option>
+                        <option value="7">الحصة السابعة</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <button id="searchBtn" class="btn btn-primary">🔎 بحث</button>
+                </div>
+            </div>
+        </div>
+        <div id="searchResultArea" style="margin-top: 20px;">
+            <div class="empty-msg">📌 سيظهر هنا جميع المعلمين الذين لديهم حصص في اليوم والحصة المحددة مع الفصول.</div>
+        </div>
+    </div>
+    <footer>🗂️ النظام: إضافة معلمين / أيام / فصول · إضافة حصص للمعلمين في أي يوم وحصة محددة مع الفصل</footer>
+</div>
+
+<script>
+    // ---------------------------------- هيكل البيانات ----------------------------------
+    // data structure:
+    // days = ["الاثنين", "الثلاثاء", ...] (مصفوفة بأسماء الأيام حسب ترتيب الإضافة)
+    // teachers = ["أ. أحمد", "أ. سعاد", ...]
+    // classes = ["1/أ", "2/ب", ...]
+    // schedule[dayIndex][lessonIndex] = array من كائنات { teacherName, className }
+    // حيث lessonIndex من 0 إلى 6 (0->الحصة الأولى ... 6->السابعة)
+    let days = [];          // قائمة بأسماء الأيام
+    let teachers = [];      // قائمة بأسماء المعلمين
+    let classes = [];       // قائمة بأسماء الفصول
+    
+    // schedule[dayName][lessonNumber-1] = [{ teacherName, className }]
+    let schedule = {};      // key: dayName, value: مصفوفة طولها 7 (كل عنصر array من الحصص)
+    
+    // تهيئة أولية لجداول فارغة
+    function initScheduleForDay(dayName) {
+        if (!schedule[dayName]) {
+            schedule[dayName] = Array(7).fill().map(() => []);
+        }
+    }
+    
+    // تحديث عرض الجداول العامة
+    function renderGeneralTables() {
+        const container = document.getElementById('daysTablesContainer');
+        if (!days.length) {
+            container.innerHTML = '<div class="empty-msg">📭 لا توجد أيام مسجلة. استخدم زر "إضافة اليوم" لإضافة أيام مثل الاثنين، الثلاثاء...</div>';
+            return;
+        }
+        
+        let html = '';
+        for (let i = 0; i < days.length; i++) {
+            const dayName = days[i];
+            initScheduleForDay(dayName);
+            const daySchedule = schedule[dayName];
+            // بناء جدول اليوم
+            html += `<div style="margin-bottom: 40px; background: #ffffff; border-radius: 28px; padding: 8px 0 12px 0; box-shadow: 0 6px 14px rgba(0,0,0,0.03);">
+                        <h3 style="background: #eef2fc; display: inline-block; padding: 8px 24px; border-radius: 40px; margin: 10px 0 12px 10px;">📆 ${escapeHtml(dayName)}</h3>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr><th style="width:120px">الحصة</th><th>المعلمون مع الفصول</th></tr>
+                                </thead>
+                                <tbody>`;
+            for (let lessonIdx = 0; lessonIdx < 7; lessonIdx++) {
+                const lessonNumber = lessonIdx + 1;
+                const entries = daySchedule[lessonIdx] || [];
+                let cellContent = '';
+                if (entries.length === 0) {
+                    cellContent = '<span style="color:#9aaebf;">— لا توجد حصص —</span>';
+                } else {
+                    entries.forEach(entry => {
+                        cellContent += `<div class="badge">🧑‍🏫 ${escapeHtml(entry.teacherName)}  |  🏫 ${escapeHtml(entry.className)}</div>`;
+                    });
                 }
-            ];
+                html += `<tr>
+                            <td style="font-weight:bold; background:#f8fafd;">الحصة ${lessonNumber}</td>
+                            <td>${cellContent}</td>
+                         </tr>`;
+            }
+            html += `</tbody></table></div></div>`;
+        }
+        container.innerHTML = html;
+        
+        // تحديث قائمة أيام البحث
+        updateSearchDaySelect();
+    }
+    
+    // تحديث القائمة المنسدلة للبحث
+    function updateSearchDaySelect() {
+        const select = document.getElementById('searchDaySelect');
+        if (!select) return;
+        const currentVal = select.value;
+        select.innerHTML = '<option value="">-- اختر اليوم --</option>';
+        days.forEach(day => {
+            select.innerHTML += `<option value="${escapeHtml(day)}" ${currentVal === day ? 'selected' : ''}>${escapeHtml(day)}</option>`;
+        });
+    }
+    
+    // وظائف الإضافة: معالج الأزرار يحدد نوع العملية
+    let currentAction = null;   // 'teacher', 'day', 'class', 'lesson'
+    let selectedLessonNumber = null; // 1..7 عند إضافة حصة
+    let selectedDayForLesson = null;  // اليوم المختار للحصة (سيتم اختياره من قائمة منسدلة)
+    
+    // إظهار لوحة الإدخال حسب الإجراء
+    function showInputPanelForAction(action, lessonNum = null) {
+        const panel = document.getElementById('inputPanel');
+        const inputLabel = document.getElementById('inputLabel');
+        const dynamicInput = document.getElementById('dynamicInput');
+        const extraSelectGroup = document.getElementById('extraSelectGroup');
+        const extraSelect = document.getElementById('extraSelect');
+        const helperMsg = document.getElementById('helperMsg');
+        
+        // إعادة تعيين
+        extraSelectGroup.style.display = 'none';
+        helperMsg.innerText = '';
+        dynamicInput.value = '';
+        
+        if (action === 'teacher') {
+            inputLabel.innerText = '👩‍🏫 اسم المعلم الجديد:';
+            helperMsg.innerText = 'مثال: أ. محمد, أ. فاطمة';
+            extraSelectGroup.style.display = 'none';
+        } 
+        else if (action === 'day') {
+            inputLabel.innerText = '📅 اسم اليوم (مثال: الاثنين, الثلاثاء):';
+            helperMsg.innerText = 'أضف يوم جديد مثل الأحد، الإثنين...';
+            extraSelectGroup.style.display = 'none';
+        }
+        else if (action === 'class') {
+            inputLabel.innerText = '🏫 اسم الفصل (مثال: 3/أ, 2/ب):';
+            helperMsg.innerText = 'أضف فصلاً دراسياً جديداً';
+            extraSelectGroup.style.display = 'none';
+        }
+        else if (action === 'lesson') {
+            inputLabel.innerText = '✏️ اختر اليوم الذي تريد إضافة الحصة فيه:';
+            // نحتاج قائمة منسدلة بالأيام المتاحة لاختيار اليوم
+            extraSelectGroup.style.display = 'flex';
+            extraSelect.innerHTML = '';
+            if (days.length === 0) {
+                helperMsg.innerText = '⚠️ لا توجد أيام مسجلة بعد، أضف يوم أولاً!';
+                extraSelect.innerHTML = '<option disabled>لا توجد أيام</option>';
+            } else {
+                days.forEach(day => {
+                    extraSelect.innerHTML += `<option value="${escapeHtml(day)}">${escapeHtml(day)}</option>`;
+                });
+                extraSelect.value = days[0];
+            }
+            extraSelectGroup.style.display = 'flex';
+            document.getElementById('extraLabel').innerText = '📅 اختر اليوم:';
+            helperMsg.innerText = `سوف تضيف الحصة ${lessonNum} لهذا اليوم، حدد المعلم والفصل من القوائم القادمة.`;
+        }
+        panel.style.display = 'block';
+        currentAction = action;
+        selectedLessonNumber = lessonNum;
+    }
+    
+    // بعد الضغط على تأكيد
+    function handleConfirm() {
+        if (!currentAction) {
+            hideInputPanel();
+            return;
+        }
+        const inputVal = document.getElementById('dynamicInput').value.trim();
+        if (currentAction === 'teacher') {
+            if (inputVal === "") { alert("يرجى إدخال اسم المعلم"); return; }
+            if (teachers.includes(inputVal)) { alert("هذا المعلم موجود بالفعل!"); return; }
+            teachers.push(inputVal);
+            alert(`✅ تم إضافة المعلم: ${inputVal}`);
+            renderGeneralTables(); // إعادة رسم الجداول (قد تظهر حصص جديدة لكن المحتوى يبقى)
+        }
+        else if (currentAction === 'day') {
+            if (inputVal === "") { alert("يرجى إدخال اسم اليوم"); return; }
+            if (days.includes(inputVal)) { alert("هذا اليوم موجود مسبقاً!"); return; }
+            days.push(inputVal);
+            initScheduleForDay(inputVal);
+            alert(`✅ تم إضافة اليوم: ${inputVal}`);
+            renderGeneralTables();
+        }
+        else if (currentAction === 'class') {
+            if (inputVal === "") { alert("يرجى إدخال اسم الفصل"); return; }
+            if (classes.includes(inputVal)) { alert("هذا الفصل موجود مسبقاً!"); return; }
+            classes.push(inputVal);
+            alert(`✅ تم إضافة الفصل: ${inputVal}`);
+            renderGeneralTables();
+        }
+        else if (currentAction === 'lesson' && selectedLessonNumber) {
+            // إضافة حصة: يجب اختيار اليوم من القائمة المنسدلة extraSelect
+            const selectedDay = document.getElementById('extraSelect').value;
+            if (!selectedDay) {
+                alert("الرجاء اختيار اليوم أولاً");
+                return;
+            }
+            if (!days.includes(selectedDay)) {
+                alert("اليوم غير موجود، أضف اليوم أولاً");
+                hideInputPanel();
+                return;
+            }
+            // الخطوة التالية: نطلب اختيار المعلم والفصل (نافذة صغيرة أو prompt منبثق)
+            // بما أن العملية تتطلب تحديد معلم وفصل، سنفتح نافذة تفاعلية ثانية.
+            if (teachers.length === 0) {
+                alert("❌ لا يوجد معلمون مسجلون. الرجاء إضافة معلم أولاً عبر زر 'إضافة اسم المعلم'.");
+                hideInputPanel();
+                return;
+            }
+            if (classes.length === 0) {
+                alert("❌ لا توجد فصول مسجلة. الرجاء إضافة فصل عبر زر 'إضافة فصل'.");
+                hideInputPanel();
+                return;
+            }
             
-            let currentAppIndex = 0;
-            let isOpening = false;
+            // عرض قوائم منبثقة لاختيار المعلم والفصل
+            const teacherOptions = teachers.map((t, idx) => `${idx+1}: ${t}`).join('\n');
+            const teacherName = prompt(`اختر المعلم:\n${teacherOptions}\n\nأدخل اسم المعلم بالضبط كما هو مكتوب:`);
+            if (!teacherName) { hideInputPanel(); return; }
+            if (!teachers.includes(teacherName)) {
+                alert("المعلم غير موجود في القائمة! تأكد من الإملاء أو أضفه أولاً.");
+                hideInputPanel();
+                return;
+            }
             
-            openBtn.addEventListener('click', function() {
-                if (isOpening) return;
-                
-                isOpening = true;
-                currentAppIndex = 0;
-                progress.style.width = '0%';
-                status.textContent = 'جاري التحضير لفتح التطبيقات...';
-                openBtn.disabled = true;
-                
-                // بدء فتح التطبيقات واحداً تلو الآخر
-                openNextApp();
-            });
+            const classOptions = classes.map((c, idx) => `${idx+1}: ${c}`).join('\n');
+            const className = prompt(`اختر الفصل:\n${classOptions}\n\nأدخل اسم الفصل بالضبط:`);
+            if (!className) { hideInputPanel(); return; }
+            if (!classes.includes(className)) {
+                alert("الفصل غير موجود! أضفه أولاً.");
+                hideInputPanel();
+                return;
+            }
             
-            function openNextApp() {
-                if (currentAppIndex >= apps.length) {
-                    // تم فتح جميع التطبيقات
-                    status.textContent = 'تم فتح جميع التطبيقات!';
-                    openBtn.disabled = false;
-                    isOpening = false;
-                    
-                    // إعادة تعيين الأيقونات
-                    apps.forEach(app => app.icon.classList.remove('active'));
+            // إضافة الحصة للجدول
+            const lessonIndex = selectedLessonNumber - 1;
+            initScheduleForDay(selectedDay);
+            const targetLessonArray = schedule[selectedDay][lessonIndex];
+            // نضيف الكائن
+            targetLessonArray.push({ teacherName: teacherName, className: className });
+            alert(`✅ تم إضافة الحصة ${selectedLessonNumber} ليوم ${selectedDay} للمعلم ${teacherName} في الفصل ${className}`);
+            renderGeneralTables();
+        }
+        hideInputPanel();
+    }
+    
+    function hideInputPanel() {
+        document.getElementById('inputPanel').style.display = 'none';
+        currentAction = null;
+        selectedLessonNumber = null;
+    }
+    
+    // البحث: إظهار جميع المعلمين الذين عندهم حصص في (اليوم المختار، الحصة المختارة) مع الفصول
+    function performSearch() {
+        const selectedDay = document.getElementById('searchDaySelect').value;
+        const lessonValue = document.getElementById('searchLessonSelect').value;
+        const resultArea = document.getElementById('searchResultArea');
+        
+        if (!selectedDay) {
+            resultArea.innerHTML = '<div class="empty-msg" style="background:#ffe6e6;">⚠️ الرجاء اختيار اليوم أولاً</div>';
+            return;
+        }
+        if (!lessonValue) {
+            resultArea.innerHTML = '<div class="empty-msg" style="background:#ffe6e6;">⚠️ الرجاء اختيار الحصة للبحث</div>';
+            return;
+        }
+        const lessonNum = parseInt(lessonValue);
+        const lessonIndex = lessonNum - 1;
+        
+        if (!days.includes(selectedDay)) {
+            resultArea.innerHTML = `<div class="empty-msg">📭 اليوم "${selectedDay}" غير موجود في الجداول.</div>`;
+            return;
+        }
+        initScheduleForDay(selectedDay);
+        const entries = schedule[selectedDay][lessonIndex] || [];
+        if (entries.length === 0) {
+            resultArea.innerHTML = `<div class="search-result">🔍 لا يوجد معلمون في يوم <strong>${escapeHtml(selectedDay)}</strong> للحصة <strong>${lessonNum}</strong>.</div>`;
+            return;
+        }
+        let resultHtml = `<div class="search-result" style="background:#eaf7ea;">
+                            <h4>📌 نتائج البحث (يوم ${escapeHtml(selectedDay)} - الحصة ${lessonNum})</h4>
+                            <ul style="margin:10px 0;">`;
+        entries.forEach(entry => {
+            resultHtml += `<li style="margin-bottom:8px;">🧑‍🏫 <strong>${escapeHtml(entry.teacherName)}</strong>  |  🏫 فصل: ${escapeHtml(entry.className)}</li>`;
+        });
+        resultHtml += `</ul><p>إجمالي المعلمين: ${entries.length}</p></div>`;
+        resultArea.innerHTML = resultHtml;
+    }
+    
+    // إعادة تعبئة قائمة البحث عند التغيير
+    function refreshSearchSelect() {
+        updateSearchDaySelect();
+    }
+    
+    // helper html escape
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+    
+    // ربط الأزرار
+    function bindEvents() {
+        document.getElementById('addTeacherBtn').addEventListener('click', () => showInputPanelForAction('teacher'));
+        document.getElementById('addDayBtn').addEventListener('click', () => showInputPanelForAction('day'));
+        document.getElementById('addClassBtn').addEventListener('click', () => showInputPanelForAction('class'));
+        const lessonBtns = document.querySelectorAll('.lesson-add-btn');
+        lessonBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const lesson = parseInt(btn.getAttribute('data-lesson'));
+                if (days.length === 0) {
+                    alert("⚠️ الرجاء إضافة يوم أولاً عبر زر 'إضافة اليوم' قبل إضافة الحصص.");
                     return;
                 }
-                
-                const app = apps[currentAppIndex];
-                
-                // تحديث الواجهة
-                status.textContent = `جاري فتح تطبيق ${app.name}...`;
-                progress.style.width = `${((currentAppIndex + 1) / apps.length) * 100}%`;
-                
-                // إبراز الأيقونة الحالية
-                apps.forEach(a => a.icon.classList.remove('active'));
-                app.icon.classList.add('active');
-                
-                // محاولة فتح التطبيق باستخدام deep link
-                tryToOpenApp(app);
-                
-                // الانتقال إلى التطبيق التالي بعد تأخير
-                currentAppIndex++;
-                setTimeout(openNextApp, 3000);
-            }
-            
-            function tryToOpenApp(app) {
-                // محاولة فتح التطبيق باستخدام deep link (للتطبيقات المثبتة)
-                const appLink = document.createElement('a');
-                appLink.href = app.url;
-                appLink.target = '_blank';
-                document.body.appendChild(appLink);
-                appLink.click();
-                document.body.removeChild(appLink);
-                
-                // إذا لم يفتح التطبيق، نقدم رابطاً بديلاً
-                setTimeout(() => {
-                    // هذا سيفتح في المتصفح إذا لم يكن التطبيق مثبتاً
-                    window.open(app.fallbackUrl, '_blank');
-                }, 1000);
-            }
-            
-            // للكشف عن نظام التشغيل وعرض التعليمات المناسبة
-            function detectOS() {
-                const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-                
-                // iOS detection
-                if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                    return 'iOS';
+                if (teachers.length === 0) {
+                    alert("⚠️ الرجاء إضافة معلم أولاً عبر زر 'إضافة اسم المعلم'.");
+                    return;
                 }
-                return 'other';
-            }
-            
-            // تعديل التعليمات بناءً على نظام التشغيل
-            if (detectOS() === 'iOS') {
-                document.querySelector('.instructions').classList.remove('hidden');
-            }
+                if (classes.length === 0) {
+                    alert("⚠️ الرجاء إضافة فصل عبر زر 'إضافة فصل'.");
+                    return;
+                }
+                showInputPanelForAction('lesson', lesson);
+            });
         });
-    </script>
+        document.getElementById('confirmDynamicBtn').addEventListener('click', handleConfirm);
+        document.getElementById('cancelDynamicBtn').addEventListener('click', hideInputPanel);
+        document.getElementById('searchBtn').addEventListener('click', performSearch);
+        // تحديث قائمة البحث عند تغيير الأيام (سيتم استدعاء بعد أي إضافة)
+    }
+    
+    // تهيئة بيانات نموذجية لتوضيح الفكرة
+    function initDemoData() {
+        if (days.length === 0) {
+            days.push("الاثنين", "الأربعاء");
+            teachers.push("أحمد السيد", "منى الخالدي");
+            classes.push("الصف 2/أ", "الصف 3/ب");
+            initScheduleForDay("الاثنين");
+            initScheduleForDay("الأربعاء");
+            // إضافة بعض الحصص التجريبية
+            schedule["الاثنين"][0] = [{ teacherName: "أحمد السيد", className: "الصف 2/أ" }];
+            schedule["الاثنين"][5] = [{ teacherName: "منى الخالدي", className: "الصف 3/ب" }];
+            schedule["الأربعاء"][2] = [{ teacherName: "أحمد السيد", className: "الصف 3/ب" }, { teacherName: "منى الخالدي", className: "الصف 2/أ" }];
+        }
+        renderGeneralTables();
+    }
+    
+    // تبديل التبويبات
+    function setupTabs() {
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+                tabs.forEach(btn => btn.classList.remove('active'));
+                tab.classList.add('active');
+                if (tabId === 'tab-search') {
+                    updateSearchDaySelect();
+                    document.getElementById('searchResultArea').innerHTML = '<div class="empty-msg">🔎 اختر اليوم والحصة ثم اضغط بحث.</div>';
+                } else {
+                    renderGeneralTables(); // تحديث الجدول عند الظهور
+                }
+            });
+        });
+    }
+    
+    // بدء التشغيل
+    function start() {
+        bindEvents();
+        setupTabs();
+        initDemoData();
+    }
+    start();
+</script>
 </body>
 </html>
